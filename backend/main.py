@@ -2,14 +2,15 @@ from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy import select
+import requests
 
 from database import get_db, engine, Base
 import models
 import schemas
+from scraper import buscar_metadados
 
 app = FastAPI(title="Wishclo API")
 
-# Libera o frontend (rodando em outra origem/porta) a fazer requisições pra essa API
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -17,8 +18,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Como ainda não temos login, todo item criado vai ser associado
-# a esse usuário fixo (user_id = 1). Isso é temporário.
 DEFAULT_USER_ID = 1
 
 
@@ -41,6 +40,15 @@ def ensure_default_user():
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+@app.get("/buscar-produto")
+def buscar_produto(url: str):
+    try:
+        dados = buscar_metadados(url)
+    except requests.exceptions.RequestException:
+        raise HTTPException(status_code=422, detail="Não foi possível acessar esse link")
+    return dados
 
 
 @app.post("/itens", response_model=schemas.ItemOut)
