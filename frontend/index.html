@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wishclo — Seu carrinho universal</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand__dot"></span>
+      <span class="brand__name">wishclo</span>
+    </div>
+    <button class="btn btn--primary" id="btn-abrir-modal">+ Adicionar item</button>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div>
+        <p class="hero__eyebrow">Seu carrinho universal</p>
+        <h1 class="hero__title">Toda a roupa que você quer.</h1>
+      </div>
+
+      <div class="total-card">
+        <p class="total-card__label">Total quero comprar</p>
+        <p class="total-card__value" id="total-valor">R$ 0,00</p>
+        <p class="total-card__meta"><span id="total-itens">0</span> itens</p>
+      </div>
+    </section>
+
+    <section class="toolbar">
+      <input type="text" id="busca" class="input" placeholder="Buscar peças..." />
+      <select id="filtro-status" class="select">
+        <option value="">Todos os status</option>
+        <option value="quero_comprar">Quero comprar</option>
+        <option value="comprado">Comprado</option>
+        <option value="fora_de_estoque">Fora de estoque</option>
+      </select>
+    </section>
+
+    <section id="lista-itens" class="grid"></section>
+
+    <section id="estado-vazio" class="empty" hidden>
+      <p class="empty__title">Seu carrinho está vazio</p>
+      <p class="empty__subtitle">Adicione o primeiro item que você quer comprar.</p>
+      <button class="btn btn--primary" id="btn-vazio-adicionar">+ Adicionar primeiro item</button>
+    </section>
+  </main>
+
+  <div class="modal-backdrop" id="modal-backdrop" hidden>
+    <div class="modal">
+      <div class="modal__header">
+        <h2>Adicionar item</h2>
+        <button class="modal__close" id="btn-fechar-modal">&times;</button>
+      </div>
+
+      <form id="form-item">
+        <div class="field">
+          <label for="input-nome">Nome *</label>
+          <input type="text" id="input-nome" required />
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="input-loja">Loja / marca *</label>
+            <input type="text" id="input-loja" required />
+          </div>
+          <div class="field">
+            <label for="input-cor">Cor</label>
+            <input type="text" id="input-cor" />
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="input-tamanho">Tamanho</label>
+            <input type="text" id="input-tamanho" />
+          </div>
+          <div class="field">
+            <label for="input-categoria">Categoria</label>
+            <select id="input-categoria">
+              <option value="">Selecione</option>
+              <option value="camiseta">Camiseta</option>
+              <option value="moletom">Moletom</option>
+              <option value="calca">Calça</option>
+              <option value="jaqueta">Jaqueta</option>
+              <option value="shorts">Shorts / bermuda</option>
+              <option value="tenis">Tênis</option>
+              <option value="acessorio">Acessório</option>
+              <option value="outro">Outro</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="input-preco">Preço (R$) *</label>
+            <input type="number" step="0.01" id="input-preco" required />
+          </div>
+          <div class="field">
+            <label for="input-frete">Frete (R$)</label>
+            <input type="number" step="0.01" id="input-frete" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="input-imagem">Imagem (URL)</label>
+          <input type="text" id="input-imagem" placeholder="https://..." />
+        </div>
+
+        <div class="field">
+          <label for="input-link">Link do produto</label>
+          <input type="text" id="input-link" placeholder="https://..." />
+        </div>
+
+        <p class="form-erro" id="form-erro" hidden></p>
+
+        <div class="modal__footer">
+          <button type="button" class="btn" id="btn-cancelar">Cancelar</button>
+          <button type="submit" class="btn btn--primary">Salvar no carrinho</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
