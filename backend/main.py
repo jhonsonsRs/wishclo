@@ -19,6 +19,11 @@ app.add_middleware(
 )
 
 
+@app.on_event("startup")
+def criar_tabelas_se_nao_existirem():
+    Base.metadata.create_all(bind=engine)
+
+
 @app.get("/health")
 def health():
     return {"status": "ok"}
