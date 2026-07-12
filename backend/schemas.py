@@ -36,7 +36,7 @@ class ItemUpdate(BaseModel):
 
 class ItemOut(ItemBase):
     id: int
-    user_id: int
+    user_id: str
     created_at: datetime
 
     class Config:

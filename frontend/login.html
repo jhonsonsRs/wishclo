@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wishclo — Entrar</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="tela-login">
+    <div class="login-card">
+      <div class="brand" style="justify-content: center; margin-bottom: 24px;">
+        <span class="brand__dot"></span>
+        <span class="brand__name">wishclo</span>
+      </div>
+
+      <div class="login-tabs">
+        <button class="login-tab login-tab--ativa" id="tab-entrar">Entrar</button>
+        <button class="login-tab" id="tab-criar-conta">Criar conta</button>
+      </div>
+
+      <form id="form-login">
+        <div class="field">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" required />
+        </div>
+        <div class="field">
+          <label for="login-senha">Senha</label>
+          <input type="password" id="login-senha" required minlength="6" />
+        </div>
+
+        <p class="form-erro" id="login-erro" hidden></p>
+        <p class="login-info" id="login-info" hidden></p>
+
+        <button type="submit" class="btn btn--primary" id="btn-submeter" style="width: 100%;">Entrar</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="login.js"></script>
+</body>
+</html>

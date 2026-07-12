@@ -13,7 +13,10 @@
       <span class="brand__dot"></span>
       <span class="brand__name">wishclo</span>
     </div>
-    <button class="btn btn--primary" id="btn-abrir-modal">+ Adicionar item</button>
+    <div class="topbar__acoes">
+      <button class="btn btn--primary" id="btn-abrir-modal">+ Adicionar item</button>
+      <button class="btn" id="btn-sair">Sair</button>
+    </div>
   </header>
 
   <main class="container">
@@ -133,6 +136,8 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

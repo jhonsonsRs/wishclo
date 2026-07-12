@@ -1,5 +1,32 @@
 const API_URL = "http://localhost:8000";
 
+let tokenAcesso = null;
+
+// Confere se existe uma sessão ativa; se não tiver, manda pra tela de login
+async function protegerPagina() {
+  const { data } = await supabaseClient.auth.getSession();
+
+  if (!data.session) {
+    window.location.href = "login.html";
+    return false;
+  }
+
+  tokenAcesso = data.session.access_token;
+  return true;
+}
+
+function headersAutenticados(extras = {}) {
+  return {
+    Authorization: `Bearer ${tokenAcesso}`,
+    ...extras,
+  };
+}
+
+document.getElementById("btn-sair").addEventListener("click", async () => {
+  await supabaseClient.auth.signOut();
+  window.location.href = "login.html";
+});
+
 const listaItensEl = document.getElementById("lista-itens");
 const estadoVazioEl = document.getElementById("estado-vazio");
 const totalValorEl = document.getElementById("total-valor");
@@ -14,7 +41,7 @@ const formItem = document.getElementById("form-item");
 const formErro = document.getElementById("form-erro");
 
 let itensCache = [];
-let itemEditandoId = null;
+let itemEditandoId = null; 
 
 const STATUS_LABEL = {
   quero_comprar: "Quero comprar",
@@ -65,7 +92,9 @@ document.getElementById("btn-cancelar").addEventListener("click", fecharModal);
 
 async function carregarItens() {
   try {
-    const resposta = await fetch(`${API_URL}/itens`);
+    const resposta = await fetch(`${API_URL}/itens`, {
+      headers: headersAutenticados(),
+    });
     if (!resposta.ok) throw new Error("Falha ao buscar itens");
     itensCache = await resposta.json();
     atualizarFiltroLojas();
@@ -105,6 +134,7 @@ function aplicarFiltros(itens) {
 function renderizar() {
   const itensFiltrados = aplicarFiltros(itensCache);
 
+  // total considera sempre todos os itens "quero_comprar", independente do filtro visual
   const itensQueroComprar = itensCache.filter((i) => i.status === "quero_comprar");
   const total = itensQueroComprar.reduce((soma, item) => {
     const preco = parseFloat(item.price) || 0;
@@ -126,6 +156,7 @@ function renderizar() {
 
   listaItensEl.innerHTML = itensFiltrados.map(renderizarCard).join("");
 
+  // liga os eventos depois de inserir o HTML na tela
   itensFiltrados.forEach((item) => {
     const selectStatus = document.getElementById(`status-${item.id}`);
     if (selectStatus) {
@@ -183,7 +214,7 @@ async function atualizarStatus(itemId, novoStatus) {
   try {
     await fetch(`${API_URL}/itens/${itemId}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: headersAutenticados({ "Content-Type": "application/json" }),
       body: JSON.stringify({ status: novoStatus }),
     });
     await carregarItens();
@@ -197,7 +228,10 @@ async function removerItem(itemId) {
   if (!confirmar) return;
 
   try {
-    await fetch(`${API_URL}/itens/${itemId}`, { method: "DELETE" });
+    await fetch(`${API_URL}/itens/${itemId}`, {
+      method: "DELETE",
+      headers: headersAutenticados(),
+    });
     await carregarItens();
   } catch (erro) {
     console.error(erro);
@@ -219,7 +253,9 @@ document.getElementById("btn-buscar-link").addEventListener("click", async () =>
   buscaStatusEl.classList.remove("busca-status--erro");
 
   try {
-    const resposta = await fetch(`${API_URL}/buscar-produto?url=${encodeURIComponent(link)}`);
+    const resposta = await fetch(`${API_URL}/buscar-produto?url=${encodeURIComponent(link)}`, {
+      headers: headersAutenticados(),
+    });
     const dados = await resposta.json();
 
     if (!resposta.ok || !dados.encontrado) {
@@ -263,7 +299,7 @@ formItem.addEventListener("submit", async (e) => {
   try {
     const resposta = await fetch(url, {
       method: metodo,
-      headers: { "Content-Type": "application/json" },
+      headers: headersAutenticados({ "Content-Type": "application/json" }),
       body: JSON.stringify(dadosItem),
     });
 
@@ -281,4 +317,6 @@ buscaEl.addEventListener("input", renderizar);
 filtroStatusEl.addEventListener("change", renderizar);
 filtroLojaEl.addEventListener("change", renderizar);
 
-carregarItens();
+protegerPagina().then((logado) => {
+  if (logado) carregarItens();
+});

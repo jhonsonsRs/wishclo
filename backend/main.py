@@ -1,13 +1,13 @@
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from sqlalchemy import select
 import requests
 
 from database import get_db, engine, Base
 import models
 import schemas
 from scraper import buscar_metadados
+from auth import obter_usuario_atual
 
 app = FastAPI(title="Wishclo API")
 
@@ -18,24 +18,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-DEFAULT_USER_ID = 1
-
-
-@app.on_event("startup")
-def ensure_default_user():
-    db = next(get_db())
-    user = db.get(models.User, DEFAULT_USER_ID)
-    if not user:
-        user = models.User(
-            id=DEFAULT_USER_ID,
-            email="joao@wishclo.local",
-            name="João",
-            password_hash="temporario",
-        )
-        db.add(user)
-        db.commit()
-    db.close()
-
 
 @app.get("/health")
 def health():
@@ -43,7 +25,7 @@ def health():
 
 
 @app.get("/buscar-produto")
-def buscar_produto(url: str):
+def buscar_produto(url: str, usuario_id: str = Depends(obter_usuario_atual)):
     try:
         dados = buscar_metadados(url)
     except requests.exceptions.RequestException:
@@ -52,8 +34,12 @@ def buscar_produto(url: str):
 
 
 @app.post("/itens", response_model=schemas.ItemOut)
-def criar_item(item: schemas.ItemCreate, db: Session = Depends(get_db)):
-    novo_item = models.Item(**item.model_dump(), user_id=DEFAULT_USER_ID)
+def criar_item(
+    item: schemas.ItemCreate,
+    db: Session = Depends(get_db),
+    usuario_id: str = Depends(obter_usuario_atual),
+):
+    novo_item = models.Item(**item.model_dump(), user_id=usuario_id)
     db.add(novo_item)
     db.commit()
     db.refresh(novo_item)
@@ -61,23 +47,35 @@ def criar_item(item: schemas.ItemCreate, db: Session = Depends(get_db)):
 
 
 @app.get("/itens", response_model=list[schemas.ItemOut])
-def listar_itens(db: Session = Depends(get_db)):
-    itens = db.query(models.Item).filter(models.Item.user_id == DEFAULT_USER_ID).all()
+def listar_itens(
+    db: Session = Depends(get_db),
+    usuario_id: str = Depends(obter_usuario_atual),
+):
+    itens = db.query(models.Item).filter(models.Item.user_id == usuario_id).all()
     return itens
 
 
 @app.get("/itens/{item_id}", response_model=schemas.ItemOut)
-def obter_item(item_id: int, db: Session = Depends(get_db)):
+def obter_item(
+    item_id: int,
+    db: Session = Depends(get_db),
+    usuario_id: str = Depends(obter_usuario_atual),
+):
     item = db.get(models.Item, item_id)
-    if not item:
+    if not item or item.user_id != usuario_id:
         raise HTTPException(status_code=404, detail="Item não encontrado")
     return item
 
 
 @app.put("/itens/{item_id}", response_model=schemas.ItemOut)
-def editar_item(item_id: int, dados: schemas.ItemUpdate, db: Session = Depends(get_db)):
+def editar_item(
+    item_id: int,
+    dados: schemas.ItemUpdate,
+    db: Session = Depends(get_db),
+    usuario_id: str = Depends(obter_usuario_atual),
+):
     item = db.get(models.Item, item_id)
-    if not item:
+    if not item or item.user_id != usuario_id:
         raise HTTPException(status_code=404, detail="Item não encontrado")
 
     for campo, valor in dados.model_dump(exclude_unset=True).items():
@@ -89,9 +87,13 @@ def editar_item(item_id: int, dados: schemas.ItemUpdate, db: Session = Depends(g
 
 
 @app.delete("/itens/{item_id}")
-def remover_item(item_id: int, db: Session = Depends(get_db)):
+def remover_item(
+    item_id: int,
+    db: Session = Depends(get_db),
+    usuario_id: str = Depends(obter_usuario_atual),
+):
     item = db.get(models.Item, item_id)
-    if not item:
+    if not item or item.user_id != usuario_id:
         raise HTTPException(status_code=404, detail="Item não encontrado")
 
     db.delete(item)
