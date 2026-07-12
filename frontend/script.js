@@ -6,15 +6,19 @@ const totalValorEl = document.getElementById("total-valor");
 const totalItensEl = document.getElementById("total-itens");
 const buscaEl = document.getElementById("busca");
 const filtroStatusEl = document.getElementById("filtro-status");
+const filtroLojaEl = document.getElementById("filtro-loja");
 
 const modalBackdrop = document.getElementById("modal-backdrop");
+const modalTitulo = document.querySelector(".modal__header h2");
 const formItem = document.getElementById("form-item");
 const formErro = document.getElementById("form-erro");
 
 let itensCache = [];
+let itemEditandoId = null;
 
 const STATUS_LABEL = {
   quero_comprar: "Quero comprar",
+  talvez: "Talvez",
   comprado: "Comprado",
   fora_de_estoque: "Fora de estoque",
 };
@@ -23,7 +27,27 @@ function formatarMoeda(valor) {
   return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
-function abrirModal() {
+function abrirModalCriar() {
+  itemEditandoId = null;
+  modalTitulo.textContent = "Adicionar item";
+  formItem.reset();
+  modalBackdrop.hidden = false;
+}
+
+function abrirModalEditar(item) {
+  itemEditandoId = item.id;
+  modalTitulo.textContent = "Editar item";
+
+  document.getElementById("input-link").value = item.link || "";
+  document.getElementById("input-nome").value = item.name || "";
+  document.getElementById("input-loja").value = item.store || "";
+  document.getElementById("input-cor").value = item.color || "";
+  document.getElementById("input-tamanho").value = item.size || "";
+  document.getElementById("input-categoria").value = item.category || "";
+  document.getElementById("input-preco").value = item.price || "";
+  document.getElementById("input-frete").value = item.freight || "";
+  document.getElementById("input-imagem").value = item.image_url || "";
+
   modalBackdrop.hidden = false;
 }
 
@@ -31,10 +55,11 @@ function fecharModal() {
   modalBackdrop.hidden = true;
   formItem.reset();
   formErro.hidden = true;
+  itemEditandoId = null;
 }
 
-document.getElementById("btn-abrir-modal").addEventListener("click", abrirModal);
-document.getElementById("btn-vazio-adicionar").addEventListener("click", abrirModal);
+document.getElementById("btn-abrir-modal").addEventListener("click", abrirModalCriar);
+document.getElementById("btn-vazio-adicionar").addEventListener("click", abrirModalCriar);
 document.getElementById("btn-fechar-modal").addEventListener("click", fecharModal);
 document.getElementById("btn-cancelar").addEventListener("click", fecharModal);
 
@@ -43,6 +68,7 @@ async function carregarItens() {
     const resposta = await fetch(`${API_URL}/itens`);
     if (!resposta.ok) throw new Error("Falha ao buscar itens");
     itensCache = await resposta.json();
+    atualizarFiltroLojas();
     renderizar();
   } catch (erro) {
     console.error(erro);
@@ -50,14 +76,29 @@ async function carregarItens() {
   }
 }
 
+function atualizarFiltroLojas() {
+  const lojaSelecionada = filtroLojaEl.value;
+  const lojas = [...new Set(itensCache.map((item) => item.store).filter(Boolean))].sort();
+
+  filtroLojaEl.innerHTML =
+    `<option value="">Todas as lojas</option>` +
+    lojas.map((loja) => `<option value="${loja}">${loja}</option>`).join("");
+
+  if (lojas.includes(lojaSelecionada)) {
+    filtroLojaEl.value = lojaSelecionada;
+  }
+}
+
 function aplicarFiltros(itens) {
   const termo = buscaEl.value.trim().toLowerCase();
   const status = filtroStatusEl.value;
+  const loja = filtroLojaEl.value;
 
   return itens.filter((item) => {
     const bateBusca = !termo || item.name.toLowerCase().includes(termo) || item.store.toLowerCase().includes(termo);
     const bateStatus = !status || item.status === status;
-    return bateBusca && bateStatus;
+    const bateLoja = !loja || item.store === loja;
+    return bateBusca && bateStatus && bateLoja;
   });
 }
 
@@ -91,6 +132,11 @@ function renderizar() {
       selectStatus.addEventListener("change", (e) => atualizarStatus(item.id, e.target.value));
     }
 
+    const botaoEditar = document.getElementById(`editar-${item.id}`);
+    if (botaoEditar) {
+      botaoEditar.addEventListener("click", () => abrirModalEditar(item));
+    }
+
     const botaoRemover = document.getElementById(`remover-${item.id}`);
     if (botaoRemover) {
       botaoRemover.addEventListener("click", () => removerItem(item.id));
@@ -99,9 +145,13 @@ function renderizar() {
 }
 
 function renderizarCard(item) {
-  const imagem = item.image_url
+  const imagemTag = item.image_url
     ? `<img class="card__imagem" src="${item.image_url}" alt="${item.name}" />`
     : `<div class="card__imagem"></div>`;
+
+  const imagem = item.link
+    ? `<a href="${item.link}" target="_blank" rel="noopener noreferrer">${imagemTag}</a>`
+    : imagemTag;
 
   const preco = parseFloat(item.price) || 0;
 
@@ -120,7 +170,10 @@ function renderizarCard(item) {
             .map(([valor, label]) => `<option value="${valor}" ${item.status === valor ? "selected" : ""}>${label}</option>`)
             .join("")}
         </select>
-        <button class="card__remover" id="remover-${item.id}">Remover</button>
+        <div class="card__acoes">
+          <button class="card__acao" id="editar-${item.id}">Editar</button>
+          <button class="card__acao" id="remover-${item.id}">Remover</button>
+        </div>
       </div>
     </div>
   `;
@@ -151,11 +204,47 @@ async function removerItem(itemId) {
   }
 }
 
+document.getElementById("btn-buscar-link").addEventListener("click", async () => {
+  const link = document.getElementById("input-link").value.trim();
+  const buscaStatusEl = document.getElementById("busca-status");
+
+  if (!link) {
+    buscaStatusEl.textContent = "Cole um link primeiro.";
+    buscaStatusEl.hidden = false;
+    return;
+  }
+
+  buscaStatusEl.textContent = "Buscando...";
+  buscaStatusEl.hidden = false;
+  buscaStatusEl.classList.remove("busca-status--erro");
+
+  try {
+    const resposta = await fetch(`${API_URL}/buscar-produto?url=${encodeURIComponent(link)}`);
+    const dados = await resposta.json();
+
+    if (!resposta.ok || !dados.encontrado) {
+      buscaStatusEl.textContent = "Não encontramos os dados automaticamente. Preencha manualmente.";
+      buscaStatusEl.classList.add("busca-status--erro");
+      return;
+    }
+
+    if (dados.name) document.getElementById("input-nome").value = dados.name;
+    if (dados.store) document.getElementById("input-loja").value = dados.store;
+    if (dados.image_url) document.getElementById("input-imagem").value = dados.image_url;
+    if (dados.price) document.getElementById("input-preco").value = dados.price;
+
+    buscaStatusEl.textContent = "Dados encontrados! Confira e complete o que faltar.";
+  } catch (erro) {
+    buscaStatusEl.textContent = "Erro ao buscar. Confira se o backend está rodando.";
+    buscaStatusEl.classList.add("busca-status--erro");
+  }
+});
+
 formItem.addEventListener("submit", async (e) => {
   e.preventDefault();
   formErro.hidden = true;
 
-  const novoItem = {
+  const dadosItem = {
     name: document.getElementById("input-nome").value,
     store: document.getElementById("input-loja").value,
     color: document.getElementById("input-cor").value || null,
@@ -167,11 +256,15 @@ formItem.addEventListener("submit", async (e) => {
     link: document.getElementById("input-link").value || null,
   };
 
+  const editando = itemEditandoId !== null;
+  const url = editando ? `${API_URL}/itens/${itemEditandoId}` : `${API_URL}/itens`;
+  const metodo = editando ? "PUT" : "POST";
+
   try {
-    const resposta = await fetch(`${API_URL}/itens`, {
-      method: "POST",
+    const resposta = await fetch(url, {
+      method: metodo,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(novoItem),
+      body: JSON.stringify(dadosItem),
     });
 
     if (!resposta.ok) throw new Error("Erro ao salvar item");
@@ -186,5 +279,6 @@ formItem.addEventListener("submit", async (e) => {
 
 buscaEl.addEventListener("input", renderizar);
 filtroStatusEl.addEventListener("change", renderizar);
+filtroLojaEl.addEventListener("change", renderizar);
 
 carregarItens();

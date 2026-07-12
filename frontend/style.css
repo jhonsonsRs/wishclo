@@ -139,6 +139,12 @@ body {
   aspect-ratio: 1 / 1;
   object-fit: cover;
   background: var(--cor-card);
+  display: block;
+  cursor: pointer;
+}
+
+.card a {
+  display: block;
 }
 
 .card__corpo {
@@ -189,18 +195,23 @@ body {
   cursor: pointer;
 }
 
-.card__remover {
+.card__acoes {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.card__acao {
   border: none;
   background: none;
   color: var(--cor-texto-suave);
   cursor: pointer;
   font-size: 12px;
-  align-self: flex-start;
   padding: 0;
-  margin-top: 4px;
+  font-family: inherit;
 }
 
-.card__remover:hover {
+.card__acao:hover {
   color: var(--cor-destaque);
 }
 
@@ -313,6 +324,25 @@ body {
 .field-row {
   display: flex;
   gap: 12px;
+}
+
+.field-com-botao {
+  display: flex;
+  gap: 8px;
+}
+
+.field-com-botao input {
+  flex: 1;
+}
+
+.busca-status {
+  font-size: 12px;
+  margin: 6px 0 0;
+  color: var(--cor-texto-suave);
+}
+
+.busca-status--erro {
+  color: var(--cor-destaque);
 }
 
 .modal__footer {

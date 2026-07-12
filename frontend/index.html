@@ -32,9 +32,13 @@
 
     <section class="toolbar">
       <input type="text" id="busca" class="input" placeholder="Buscar peças..." />
+      <select id="filtro-loja" class="select">
+        <option value="">Todas as lojas</option>
+      </select>
       <select id="filtro-status" class="select">
         <option value="">Todos os status</option>
         <option value="quero_comprar">Quero comprar</option>
+        <option value="talvez">Talvez</option>
         <option value="comprado">Comprado</option>
         <option value="fora_de_estoque">Fora de estoque</option>
       </select>
@@ -57,6 +61,15 @@
       </div>
 
       <form id="form-item">
+        <div class="field">
+          <label for="input-link">Link do produto</label>
+          <div class="field-com-botao">
+            <input type="text" id="input-link" placeholder="https://..." />
+            <button type="button" class="btn" id="btn-buscar-link">Buscar</button>
+          </div>
+          <p class="busca-status" id="busca-status" hidden></p>
+        </div>
+
         <div class="field">
           <label for="input-nome">Nome *</label>
           <input type="text" id="input-nome" required />
@@ -108,11 +121,6 @@
         <div class="field">
           <label for="input-imagem">Imagem (URL)</label>
           <input type="text" id="input-imagem" placeholder="https://..." />
-        </div>
-
-        <div class="field">
-          <label for="input-link">Link do produto</label>
-          <input type="text" id="input-link" placeholder="https://..." />
         </div>
 
         <p class="form-erro" id="form-erro" hidden></p>
