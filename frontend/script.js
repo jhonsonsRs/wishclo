@@ -1,8 +1,7 @@
-const API_URL = "http://localhost:8000";
+const API_URL = "https://wishclo.onrender.com";
 
 let tokenAcesso = null;
 
-// Confere se existe uma sessão ativa; se não tiver, manda pra tela de login
 async function protegerPagina() {
   const { data } = await supabaseClient.auth.getSession();
 
@@ -156,7 +155,6 @@ function renderizar() {
 
   listaItensEl.innerHTML = itensFiltrados.map(renderizarCard).join("");
 
-  // liga os eventos depois de inserir o HTML na tela
   itensFiltrados.forEach((item) => {
     const selectStatus = document.getElementById(`status-${item.id}`);
     if (selectStatus) {
