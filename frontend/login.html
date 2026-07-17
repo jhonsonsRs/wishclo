@@ -21,6 +21,10 @@
       </div>
 
       <form id="form-login">
+        <div class="field" id="campo-nome" hidden>
+          <label for="login-nome">Nome</label>
+          <input type="text" id="login-nome" />
+        </div>
         <div class="field">
           <label for="login-email">Email</label>
           <input type="email" id="login-email" required />
@@ -35,6 +39,10 @@
 
         <button type="submit" class="btn btn--primary" id="btn-submeter" style="width: 100%;">Entrar</button>
       </form>
+
+      <div class="login-divisor"><span>ou</span></div>
+
+      <button type="button" class="btn" id="btn-google" style="width: 100%;">Entrar com Google</button>
     </div>
   </div>
 
