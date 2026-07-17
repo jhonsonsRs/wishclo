@@ -6,16 +6,16 @@ import requests
 from database import get_db, engine, Base
 import models
 import schemas
-from scraper import buscar_metadados
+from scraper import buscar_metadados, UrlInseguraError
 from auth import obter_usuario_atual
 
 app = FastAPI(title="Wishclo API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=["https://wishclo.vercel.app"],
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["Authorization", "Content-Type"],
 )
 
 
@@ -33,6 +33,8 @@ def health():
 def buscar_produto(url: str, usuario_id: str = Depends(obter_usuario_atual)):
     try:
         dados = buscar_metadados(url)
+    except UrlInseguraError:
+        raise HTTPException(status_code=400, detail="Essa URL não é permitida")
     except requests.exceptions.RequestException:
         raise HTTPException(status_code=422, detail="Não foi possível acessar esse link")
     return dados

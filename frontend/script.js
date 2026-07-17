@@ -2,6 +2,12 @@ const API_URL = "https://wishclo.onrender.com";
 
 let tokenAcesso = null;
 
+function escapeHtml(texto) {
+  const div = document.createElement("div");
+  div.textContent = texto ?? "";
+  return div.innerHTML;
+}
+
 async function protegerPagina() {
   const { data } = await supabaseClient.auth.getSession();
 

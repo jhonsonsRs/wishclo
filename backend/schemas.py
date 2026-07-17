@@ -1,19 +1,19 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 from decimal import Decimal
 from datetime import datetime
 
 
 class ItemBase(BaseModel):
-    name: str
-    store: str
-    color: Optional[str] = None
-    size: Optional[str] = None
+    name: str = Field(..., max_length=400)
+    store: str = Field(..., max_length=200)
+    color: Optional[str] = Field(None, max_length=100)
+    size: Optional[str] = Field(None, max_length=10)
     price: Decimal
     freight: Optional[Decimal] = None
-    category: Optional[str] = None
-    image_url: Optional[str] = None
-    link: Optional[str] = None
+    category: Optional[str] = Field(None, max_length=50)
+    image_url: Optional[str] = Field(None, max_length=500)
+    link: Optional[str] = Field(None, max_length=500)
     status: Optional[str] = "quero_comprar"
 
 
@@ -22,15 +22,15 @@ class ItemCreate(ItemBase):
 
 
 class ItemUpdate(BaseModel):
-    name: Optional[str] = None
-    store: Optional[str] = None
-    color: Optional[str] = None
-    size: Optional[str] = None
+    name: Optional[str] = Field(None, max_length=400)
+    store: Optional[str] = Field(None, max_length=200)
+    color: Optional[str] = Field(None, max_length=100)
+    size: Optional[str] = Field(None, max_length=10)
     price: Optional[Decimal] = None
     freight: Optional[Decimal] = None
-    category: Optional[str] = None
-    image_url: Optional[str] = None
-    link: Optional[str] = None
+    category: Optional[str] = Field(None, max_length=50)
+    image_url: Optional[str] = Field(None, max_length=500)
+    link: Optional[str] = Field(None, max_length=500)
     status: Optional[str] = None
 
 
