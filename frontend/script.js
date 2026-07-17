@@ -139,7 +139,6 @@ function aplicarFiltros(itens) {
 function renderizar() {
   const itensFiltrados = aplicarFiltros(itensCache);
 
-  // total considera sempre todos os itens "quero_comprar", independente do filtro visual
   const itensQueroComprar = itensCache.filter((i) => i.status === "quero_comprar");
   const total = itensQueroComprar.reduce((soma, item) => {
     const preco = parseFloat(item.price) || 0;
