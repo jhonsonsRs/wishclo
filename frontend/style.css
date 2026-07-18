@@ -677,6 +677,7 @@ a {
   border: 1.5px dashed var(--line);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-float);
+  color: var(--ink);
 }
 
 .tag-card::before,
@@ -712,7 +713,7 @@ a {
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  color: var(--ink-faint);
+  color: var(--ink-soft);
   margin: 0 0 6px;
 }
 
