@@ -3,141 +3,142 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Wishclo — Seu carrinho universal</title>
+  <title>wishclo — toda a roupa que você quer, num só lugar</title>
+  <meta name="description" content="Salve peças de qualquer loja online e acompanhe quanto vai gastar, tudo num só carrinho." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <header class="topbar">
-    <div class="brand">
-      <span class="brand__dot"></span>
-      <span class="brand__name">wishclo</span>
-    </div>
-    <div class="topbar__acoes">
-      <button class="btn btn--primary" id="btn-abrir-modal">+ Adicionar item</button>
-      <button class="btn" id="btn-sair">Sair</button>
-    </div>
-  </header>
+  <div class="landing-hero">
+    <nav class="landing-nav">
+      <div class="brand">
+        <span class="brand__dot"></span>
+        <span class="brand__name">wishclo</span>
+      </div>
+      <div class="landing-nav__acoes">
+        <a class="landing-nav__link" href="login.html">Entrar</a>
+        <a class="btn btn--primary" href="login.html?modo=criar-conta">Criar conta</a>
+      </div>
+    </nav>
 
-  <main class="container">
-    <section class="hero">
+    <div class="landing-hero__inner">
       <div>
-        <p class="hero__eyebrow">Seu carrinho universal</p>
-        <h1 class="hero__title">Toda a roupa que você quer.</h1>
+        <span class="landing-badge"><span class="landing-badge__dot"></span> Wishlist universal de moda</span>
+        <h1 class="landing-hero__title">Toda a roupa que você quer.<br />Num <em>só</em> carrinho.</h1>
+        <p class="landing-hero__desc">
+          Salve peças da Shein, Zara, Nike, Renner e de onde mais você comprar.
+          O wishclo soma tudo pra você não estourar o orçamento — sem precisar
+          abrir dez abas pra lembrar o que queria.
+        </p>
+        <div class="landing-cta-group">
+          <a class="btn btn--primary btn--lg" href="login.html?modo=criar-conta">Criar conta grátis</a>
+          <a class="btn btn--ghost-light btn--lg" href="login.html">Entrar</a>
+        </div>
       </div>
 
-      <div class="total-card">
-        <p class="total-card__label">Total quero comprar</p>
-        <p class="total-card__value" id="total-valor">R$ 0,00</p>
-        <p class="total-card__meta"><span id="total-itens">0</span> itens</p>
+      <div class="tag-card">
+        <div class="tag-preview">
+          <div class="tag-preview__top">
+            <div>
+              <p class="tag-preview__label">Total quero comprar</p>
+              <p class="tag-preview__valor">R$ 1.338,79</p>
+            </div>
+            <span class="tag-preview__badge">3 itens</span>
+          </div>
+
+          <div class="tag-item">
+            <div class="tag-item__imagem"></div>
+            <div>
+              <p class="tag-item__nome">Moletom oversized</p>
+              <span class="tag-item__loja">Shein</span>
+            </div>
+            <span class="tag-item__preco">R$ 89,90</span>
+          </div>
+          <div class="tag-item">
+            <div class="tag-item__imagem"></div>
+            <div>
+              <p class="tag-item__nome">Air Force 1 '07</p>
+              <span class="tag-item__loja">Nike</span>
+            </div>
+            <span class="tag-item__preco">R$ 899,99</span>
+          </div>
+          <div class="tag-item">
+            <div class="tag-item__imagem"></div>
+            <div>
+              <p class="tag-item__nome">Calça wide leg</p>
+              <span class="tag-item__loja">Zara</span>
+            </div>
+            <span class="tag-item__preco">R$ 349,00</span>
+          </div>
+        </div>
       </div>
-    </section>
-
-    <section class="toolbar">
-      <input type="text" id="busca" class="input" placeholder="Buscar peças..." />
-      <select id="filtro-loja" class="select">
-        <option value="">Todas as lojas</option>
-      </select>
-      <select id="filtro-status" class="select">
-        <option value="">Todos os status</option>
-        <option value="quero_comprar">Quero comprar</option>
-        <option value="talvez">Talvez</option>
-        <option value="comprado">Comprado</option>
-        <option value="fora_de_estoque">Fora de estoque</option>
-      </select>
-    </section>
-
-    <section id="lista-itens" class="grid"></section>
-
-    <section id="estado-vazio" class="empty" hidden>
-      <p class="empty__title">Seu carrinho está vazio</p>
-      <p class="empty__subtitle">Adicione o primeiro item que você quer comprar.</p>
-      <button class="btn btn--primary" id="btn-vazio-adicionar">+ Adicionar primeiro item</button>
-    </section>
-  </main>
-
-  <div class="modal-backdrop" id="modal-backdrop" hidden>
-    <div class="modal">
-      <div class="modal__header">
-        <h2>Adicionar item</h2>
-        <button class="modal__close" id="btn-fechar-modal">&times;</button>
-      </div>
-
-      <form id="form-item">
-        <div class="field">
-          <label for="input-link">Link do produto</label>
-          <div class="field-com-botao">
-            <input type="text" id="input-link" placeholder="https://..." />
-            <button type="button" class="btn" id="btn-buscar-link">Buscar</button>
-          </div>
-          <p class="busca-status" id="busca-status" hidden></p>
-        </div>
-
-        <div class="field">
-          <label for="input-nome">Nome *</label>
-          <input type="text" id="input-nome" required />
-        </div>
-
-        <div class="field-row">
-          <div class="field">
-            <label for="input-loja">Loja / marca *</label>
-            <input type="text" id="input-loja" required />
-          </div>
-          <div class="field">
-            <label for="input-cor">Cor</label>
-            <input type="text" id="input-cor" />
-          </div>
-        </div>
-
-        <div class="field-row">
-          <div class="field">
-            <label for="input-tamanho">Tamanho</label>
-            <input type="text" id="input-tamanho" />
-          </div>
-          <div class="field">
-            <label for="input-categoria">Categoria</label>
-            <select id="input-categoria">
-              <option value="">Selecione</option>
-              <option value="camiseta">Camiseta</option>
-              <option value="moletom">Moletom</option>
-              <option value="calca">Calça</option>
-              <option value="jaqueta">Jaqueta</option>
-              <option value="shorts">Shorts / bermuda</option>
-              <option value="tenis">Tênis</option>
-              <option value="acessorio">Acessório</option>
-              <option value="outro">Outro</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="field-row">
-          <div class="field">
-            <label for="input-preco">Preço (R$) *</label>
-            <input type="number" step="0.01" id="input-preco" required />
-          </div>
-          <div class="field">
-            <label for="input-frete">Frete (R$)</label>
-            <input type="number" step="0.01" id="input-frete" />
-          </div>
-        </div>
-
-        <div class="field">
-          <label for="input-imagem">Imagem (URL)</label>
-          <input type="text" id="input-imagem" placeholder="https://..." />
-        </div>
-
-        <p class="form-erro" id="form-erro" hidden></p>
-
-        <div class="modal__footer">
-          <button type="button" class="btn" id="btn-cancelar">Cancelar</button>
-          <button type="submit" class="btn btn--primary">Salvar no carrinho</button>
-        </div>
-      </form>
     </div>
+    <div style="height: 40px;"></div>
   </div>
+
+  <div class="tear-line"></div>
+
+  <section class="landing-secao">
+    <p class="landing-secao__eyebrow">Como funciona</p>
+    <h2 class="landing-secao__titulo">Três passos, e a sua wishlist para de viver espalhada em favoritos e prints.</h2>
+
+    <div class="passos">
+      <div class="passo">
+        <span class="passo__numero">01</span>
+        <h3 class="passo__titulo">Cole o link</h3>
+        <p class="passo__texto">Achou uma peça em qualquer loja? Cola o link no wishclo e ele busca nome, foto e preço sozinho.</p>
+      </div>
+      <div class="passo">
+        <span class="passo__numero">02</span>
+        <h3 class="passo__titulo">Organize por status</h3>
+        <p class="passo__texto">Marca como "quero comprar", "talvez" ou "comprado" — e filtra por loja quando precisar achar algo rápido.</p>
+      </div>
+      <div class="passo">
+        <span class="passo__numero">03</span>
+        <h3 class="passo__titulo">Acompanhe o total</h3>
+        <p class="passo__texto">O valor de tudo que você quer comprar fica sempre visível, somando preço e frete de cada peça.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="tear-line"></div>
+
+  <section class="landing-secao">
+    <p class="landing-secao__eyebrow">Funciona com as lojas que você já usa</p>
+    <h2 class="landing-secao__titulo" style="margin-bottom: 24px;">Cole o link de onde for. O wishclo se vira com o resto.</h2>
+    <div class="lojas-swatches">
+      <span class="swatch">Shein</span>
+      <span class="swatch">Zara</span>
+      <span class="swatch">Nike</span>
+      <span class="swatch">Renner</span>
+      <span class="swatch">Shopee</span>
+      <span class="swatch">C&A</span>
+      <span class="swatch">+ qualquer loja</span>
+    </div>
+  </section>
+
+  <section class="landing-cta-final">
+    <h2 class="landing-cta-final__titulo">Pronto pra parar de perder o controle do carrinho?</h2>
+    <p class="landing-cta-final__texto">Leva menos de um minuto pra criar sua conta.</p>
+    <a class="btn btn--primary btn--lg" href="login.html?modo=criar-conta">Criar conta grátis</a>
+  </section>
+
+  <footer class="landing-footer">
+    wishclo — seu carrinho universal
+  </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
-  <script src="script.js"></script>
+  <script>
+    // Se já tiver sessão ativa, pula a landing e vai direto pro dashboard
+    supabaseClient.auth.getSession().then(({ data }) => {
+      if (data.session) {
+        window.location.href = "app.html";
+      }
+    });
+  </script>
 </body>
 </html>

@@ -35,14 +35,20 @@ tabCriarConta.addEventListener("click", () => mudarModo("criar-conta"));
 btnGoogle.addEventListener("click", async () => {
   await supabaseClient.auth.signInWithOAuth({
     provider: "google",
-    options: { redirectTo: window.location.origin + "/index.html" },
+    options: { redirectTo: window.location.origin + "/app.html" },
   });
 });
+
+// se veio da landing com ?modo=criar-conta, já abre na aba de cadastro
+const parametros = new URLSearchParams(window.location.search);
+if (parametros.get("modo") === "criar-conta") {
+  mudarModo("criar-conta");
+}
 
 // se o usuário já estiver logado, manda direto pro dashboard
 supabaseClient.auth.getSession().then(({ data }) => {
   if (data.session) {
-    window.location.href = "index.html";
+    window.location.href = "app.html";
   }
 });
 
@@ -63,7 +69,7 @@ formLogin.addEventListener("submit", async (e) => {
       return;
     }
 
-    window.location.href = "index.html";
+    window.location.href = "app.html";
   } else {
     const nome = document.getElementById("login-nome").value;
     const { error } = await supabaseClient.auth.signUp({

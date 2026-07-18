@@ -29,7 +29,7 @@ function headersAutenticados(extras = {}) {
 
 document.getElementById("btn-sair").addEventListener("click", async () => {
   await supabaseClient.auth.signOut();
-  window.location.href = "login.html";
+  window.location.href = "index.html";
 });
 
 const listaItensEl = document.getElementById("lista-itens");
@@ -116,7 +116,7 @@ function atualizarFiltroLojas() {
 
   filtroLojaEl.innerHTML =
     `<option value="">Todas as lojas</option>` +
-    lojas.map((loja) => `<option value="${loja}">${loja}</option>`).join("");
+    lojas.map((loja) => `<option value="${escapeHtml(loja)}">${escapeHtml(loja)}</option>`).join("");
 
   if (lojas.includes(lojaSelecionada)) {
     filtroLojaEl.value = lojaSelecionada;
@@ -139,6 +139,7 @@ function aplicarFiltros(itens) {
 function renderizar() {
   const itensFiltrados = aplicarFiltros(itensCache);
 
+  // total considera sempre todos os itens "quero_comprar", independente do filtro visual
   const itensQueroComprar = itensCache.filter((i) => i.status === "quero_comprar");
   const total = itensQueroComprar.reduce((soma, item) => {
     const preco = parseFloat(item.price) || 0;
@@ -178,24 +179,41 @@ function renderizar() {
   });
 }
 
+function linkSeguro(link) {
+  if (!link) return null;
+  try {
+    const url = new URL(link);
+    if (url.protocol !== "http:" && url.protocol !== "https:") return null;
+    return url.href;
+  } catch {
+    return null;
+  }
+}
+
 function renderizarCard(item) {
-  const imagemTag = item.image_url
-    ? `<img class="card__imagem" src="${item.image_url}" alt="${item.name}" />`
+  const nome = escapeHtml(item.name);
+  const loja = escapeHtml(item.store);
+  const imagemUrl = linkSeguro(item.image_url);
+  const linkProduto = linkSeguro(item.link);
+
+  const imagemTag = imagemUrl
+    ? `<img class="card__imagem" loading="lazy" src="${escapeHtml(imagemUrl)}" alt="${nome}" />`
     : `<div class="card__imagem"></div>`;
 
-  const imagem = item.link
-    ? `<a href="${item.link}" target="_blank" rel="noopener noreferrer">${imagemTag}</a>`
+  const imagem = linkProduto
+    ? `<a href="${escapeHtml(linkProduto)}" target="_blank" rel="noopener noreferrer">${imagemTag}</a>`
     : imagemTag;
 
   const preco = parseFloat(item.price) || 0;
+  const detalhe = escapeHtml([item.color, item.size].filter(Boolean).join(" · "));
 
   return `
     <div class="card">
       ${imagem}
       <div class="card__corpo">
-        <span class="card__loja">${item.store}</span>
-        <p class="card__nome">${item.name}</p>
-        <span class="card__detalhe">${[item.color, item.size].filter(Boolean).join(" · ")}</span>
+        <span class="card__loja">${loja}</span>
+        <p class="card__nome">${nome}</p>
+        <span class="card__detalhe">${detalhe}</span>
         <div class="card__rodape">
           <span class="card__preco">${formatarMoeda(preco)}</span>
         </div>
