@@ -58,6 +58,21 @@
     </div>
   </div>
 
+  <div class="modal-backdrop" id="modal-confirmacao-backdrop" hidden>
+    <div class="modal modal--estreito">
+      <div class="modal__header">
+        <h2>Confirma seu email</h2>
+      </div>
+      <p class="modal__texto">
+        Mandamos um link de confirmação pra <strong id="modal-confirmacao-email"></strong>.
+        Abre sua caixa de entrada (e confere o spam também) e clica no link antes de tentar entrar.
+      </p>
+      <div class="modal__footer">
+        <button type="button" class="btn btn--primary" id="btn-fechar-confirmacao">Entendi</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <script src="login.js"></script>

@@ -593,6 +593,21 @@ a {
   margin-top: 6px;
 }
 
+.modal--estreito {
+  max-width: 400px;
+}
+
+.modal__texto {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+  margin: 0 0 20px;
+}
+
+.modal__texto strong {
+  color: var(--ink);
+}
+
 /* ==========================================================================
    Landing page
    ========================================================================== */

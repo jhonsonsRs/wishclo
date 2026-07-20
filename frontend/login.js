@@ -6,6 +6,18 @@ const btnGoogle = document.getElementById("btn-google");
 const loginErro = document.getElementById("login-erro");
 const loginInfo = document.getElementById("login-info");
 const campoNome = document.getElementById("campo-nome");
+const modalConfirmacaoBackdrop = document.getElementById("modal-confirmacao-backdrop");
+const modalConfirmacaoEmail = document.getElementById("modal-confirmacao-email");
+const btnFecharConfirmacao = document.getElementById("btn-fechar-confirmacao");
+
+function abrirModalConfirmacao(email) {
+  modalConfirmacaoEmail.textContent = email;
+  modalConfirmacaoBackdrop.hidden = false;
+}
+
+btnFecharConfirmacao.addEventListener("click", () => {
+  modalConfirmacaoBackdrop.hidden = true;
+});
 
 let modo = "entrar"; // ou "criar-conta"
 
@@ -91,5 +103,6 @@ formLogin.addEventListener("submit", async (e) => {
     loginInfo.textContent = "Conta criada! Confira seu email para confirmar antes de entrar.";
     loginInfo.hidden = false;
     mudarModo("entrar");
+    abrirModalConfirmacao(email);
   }
 });
