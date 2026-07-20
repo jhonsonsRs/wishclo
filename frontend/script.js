@@ -96,6 +96,16 @@ document.getElementById("btn-fechar-modal").addEventListener("click", fecharModa
 document.getElementById("btn-cancelar").addEventListener("click", fecharModal);
 
 async function carregarItens() {
+  estadoVazioEl.hidden = true;
+  listaItensEl.hidden = false;
+  listaItensEl.innerHTML = `
+    <div class="loading-estado">
+      <div class="loading-spinner"></div>
+      <p>Carregando seu carrinho...</p>
+      <p class="loading-estado__dica">Pode levar até 1 minuto no primeiro acesso do dia.</p>
+    </div>
+  `;
+
   try {
     const resposta = await fetch(`${API_URL}/itens`, {
       headers: headersAutenticados(),
@@ -181,8 +191,16 @@ function renderizar() {
 
 function linkSeguro(link) {
   if (!link) return null;
+  let candidato = link.trim();
+
+  // Alguns sites retornam URL de imagem sem protocolo (ex: "//cdn.loja.com/foto.jpg").
+  // Sem isso, o new URL() abaixo falha e a imagem simplesmente não aparece.
+  if (candidato.startsWith("//")) {
+    candidato = "https:" + candidato;
+  }
+
   try {
-    const url = new URL(link);
+    const url = new URL(candidato);
     if (url.protocol !== "http:" && url.protocol !== "https:") return null;
     return url.href;
   } catch {

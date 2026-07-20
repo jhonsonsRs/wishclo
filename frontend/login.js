@@ -64,7 +64,11 @@ formLogin.addEventListener("submit", async (e) => {
     const { error } = await supabaseClient.auth.signInWithPassword({ email, password: senha });
 
     if (error) {
-      loginErro.textContent = "Email ou senha incorretos.";
+      if (error.message?.toLowerCase().includes("email not confirmed")) {
+        loginErro.textContent = "Você ainda não confirmou seu email. Verifica sua caixa de entrada (e o spam) e clica no link antes de entrar.";
+      } else {
+        loginErro.textContent = "Email ou senha incorretos.";
+      }
       loginErro.hidden = false;
       return;
     }
